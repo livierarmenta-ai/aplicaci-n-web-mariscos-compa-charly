@@ -3,7 +3,7 @@ import logoCharly from '../assets/logo-charly.png'
 
 const sections = ['Resumen', 'Productos', 'Pedidos', 'Ventas']
 
-function PanelVendedor({ products, orders, onLogout }) {
+function PanelVendedor({ sellerName, products, orders, onLogout }) {
 	const [section, setSection] = useState('Resumen')
 	const salesTotal = orders.reduce((total, order) => total + order.total, 0)
 	const averageTicket = orders.length ? salesTotal / orders.length : 0
@@ -36,7 +36,7 @@ function PanelVendedor({ products, orders, onLogout }) {
 					/>
 				</div>
 				<div className="seller-header__meta">
-					<span className="seller-header__tag">Vendedor</span>
+					<span className="seller-header__tag">{sellerName || 'Vendedor'}</span>
 				</div>
 				<button className="button button--text" type="button" onClick={onLogout}>Salir</button>
 			</header>

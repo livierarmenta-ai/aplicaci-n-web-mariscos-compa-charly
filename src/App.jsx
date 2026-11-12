@@ -8,10 +8,17 @@ import MiPedido from './pages/MiPedido.jsx'
 import PanelVendedor from './pages/PanelVendedor.jsx'
 import Footer from './components/Footer.jsx'
 import Navbar from './components/Navbar.jsx'
+import mariscosImage from './assets/mariscos/mariscos.jpg'
 import './App.css'
 
-const foodImage =
-  'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?auto=format&fit=crop&w=1200&q=85'
+const productImages = import.meta.glob('./assets/mariscos/*.{jpg,jpeg,png,webp}', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+})
+
+const getProductImage = (fileName) =>
+  productImages[`./assets/mariscos/${fileName}`] || mariscosImage
 
 const products = [
   {
@@ -20,7 +27,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 170,
-    image: foodImage,
+    image: getProductImage('aguachile-rojo.jpg'),
   },
   {
     id: 'aguachile-verde',
@@ -28,7 +35,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 175,
-    image: foodImage,
+    image: getProductImage('aguachile-verde.jpg'),
   },
   {
     id: 'aguachile-negro',
@@ -36,7 +43,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 180,
-    image: foodImage,
+    image: getProductImage('aguachile-negro.jpg'),
   },
   {
     id: 'aguachile-a-la-diabla',
@@ -44,7 +51,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 185,
-    image: foodImage,
+    image: getProductImage('aguachile-a-la-diabla.jpg'),
   },
   {
     id: 'ceviche-pescado-1l',
@@ -52,7 +59,7 @@ const products = [
     detail: 'Ceviche',
     size: '1 L',
     price: 120,
-    image: foodImage,
+    image: getProductImage('ceviche-pescado-1l.jpg'),
   },
   {
     id: 'ceviche-camaron-1l',
@@ -60,7 +67,7 @@ const products = [
     detail: 'Ceviche',
     size: '1 L',
     price: 140,
-    image: foodImage,
+    image: getProductImage('ceviche-camaron-1l.jpg'),
   },
   {
     id: 'ceviche-campechano-1l',
@@ -68,7 +75,7 @@ const products = [
     detail: 'Ceviche',
     size: '1 L',
     price: 160,
-    image: foodImage,
+    image: getProductImage('ceviche-campechano-1l.jpg'),
   },
   {
     id: 'ceviche-pescado-medio',
@@ -76,7 +83,7 @@ const products = [
     detail: 'Ceviche',
     size: '1/2 L',
     price: 80,
-    image: foodImage,
+    image: getProductImage('ceviche-pescado-medio-litro.jpg'),
   },
   {
     id: 'ceviche-camaron-medio',
@@ -84,7 +91,7 @@ const products = [
     detail: 'Ceviche',
     size: '1/2 L',
     price: 85,
-    image: foodImage,
+    image: getProductImage('ceviche-camaron-medio-litro.jpg'),
   },
   {
     id: 'ceviche-campechano-medio',
@@ -92,7 +99,7 @@ const products = [
     detail: 'Ceviche',
     size: '1/2 L',
     price: 90,
-    image: foodImage,
+    image: getProductImage('ceviche-campechano-medio-litro.jpg'),
   },
 ]
 
@@ -100,6 +107,7 @@ function App() {
   const [page, setPage] = useState('inicio')
   const [cart, setCart] = useState([])
   const [customer, setCustomer] = useState({ name: '', phone: '', address: '' })
+  const [sellerName, setSellerName] = useState('')
   const [orders, setOrders] = useState(() => {
     const savedOrders = window.localStorage.getItem('mariscos-charly-orders')
     return savedOrders ? JSON.parse(savedOrders) : []
@@ -178,7 +186,8 @@ function App() {
     setRegisteredOrder(order)
   }
 
-  function handleSellerLogin() {
+  function handleSellerLogin(username) {
+    setSellerName(username)
     setPage('panel')
   }
 
@@ -229,9 +238,11 @@ function App() {
         )}
         {page === 'panel' && (
           <PanelVendedor
+            sellerName={sellerName}
             products={products}
             orders={orders}
             onLogout={() => {
+              setSellerName('')
               setPage('inicio')
             }}
           />
