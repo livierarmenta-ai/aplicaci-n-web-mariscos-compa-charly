@@ -140,7 +140,7 @@ function PanelVendedor({ products, orders, onLogout }) {
 					{section === 'Pedidos' && (
 						<>
 							<div className="page-heading seller-content__heading">
-								<div><p className="eyebrow">Registro local de esta sesión</p><h1>Pedidos</h1></div>
+								<div><p className="eyebrow">Pedidos guardados en este dispositivo</p><h1>Pedidos</h1></div>
 								<span className="seller-pill">{orders.length} totales</span>
 							</div>
 							{orders.length ? (
@@ -154,6 +154,7 @@ function PanelVendedor({ products, orders, onLogout }) {
 												<div>
 													<strong>{order.customer.name || order.id}</strong>
 													<small>{order.createdAt}</small>
+													<small>Tel. {order.customer.phone || 'No registrado'}</small>
 												</div>
 											</div>
 											<div className="seller-list__amount">

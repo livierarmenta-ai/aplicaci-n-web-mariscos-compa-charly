@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Confirmacion from './pages/Confirmacion.jsx'
 import DatosCliente from './pages/DatosCliente.jsx'
 import Inicio from './pages/Inicio.jsx'
@@ -18,8 +18,32 @@ const products = [
     id: 'aguachile-rojo',
     name: 'Aguachile rojo',
     detail: 'Aguachile',
-    size: 'Precio pendiente',
-    price: null,
+    size: 'Por charola',
+    price: 170,
+    image: foodImage,
+  },
+  {
+    id: 'aguachile-verde',
+    name: 'Aguachile verde',
+    detail: 'Aguachile',
+    size: 'Por charola',
+    price: 175,
+    image: foodImage,
+  },
+  {
+    id: 'aguachile-negro',
+    name: 'Aguachile negro',
+    detail: 'Aguachile',
+    size: 'Por charola',
+    price: 180,
+    image: foodImage,
+  },
+  {
+    id: 'aguachile-a-la-diabla',
+    name: 'Aguachile a la diabla',
+    detail: 'Aguachile',
+    size: 'Por charola',
+    price: 185,
     image: foodImage,
   },
   {
@@ -41,7 +65,7 @@ const products = [
   {
     id: 'ceviche-campechano-1l',
     name: 'Ceviche campechano',
-    detail: 'Camarón crudo o cocido y pescado',
+    detail: 'Ceviche',
     size: '1 L',
     price: 160,
     image: foodImage,
@@ -54,14 +78,37 @@ const products = [
     price: 80,
     image: foodImage,
   },
+  {
+    id: 'ceviche-camaron-medio',
+    name: 'Ceviche de camarón',
+    detail: 'Ceviche',
+    size: '1/2 L',
+    price: 85,
+    image: foodImage,
+  },
+  {
+    id: 'ceviche-campechano-medio',
+    name: 'Ceviche campechano',
+    detail: 'Ceviche',
+    size: '1/2 L',
+    price: 90,
+    image: foodImage,
+  },
 ]
 
 function App() {
   const [page, setPage] = useState('inicio')
   const [cart, setCart] = useState([])
   const [customer, setCustomer] = useState({ name: '', phone: '', address: '' })
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState(() => {
+    const savedOrders = window.localStorage.getItem('mariscos-charly-orders')
+    return savedOrders ? JSON.parse(savedOrders) : []
+  })
   const [registeredOrder, setRegisteredOrder] = useState(null)
+
+  useEffect(() => {
+    window.localStorage.setItem('mariscos-charly-orders', JSON.stringify(orders))
+  }, [orders])
 
   const cartItems = useMemo(
     () =>
