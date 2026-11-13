@@ -54,6 +54,18 @@ function DatosCliente({ initialValues, onContinue }) {
 						value={values.address}
 					/>
 				</label>
+				<label className="field">
+					<span>¿Con cuánto va a pagar? (opcional):</span>
+					<input
+						inputMode="decimal"
+						min="0"
+						name="paymentAmount"
+						onChange={handleChange}
+						step="0.01"
+						type="number"
+						value={values.paymentAmount ?? ''}
+					/>
+				</label>
 				<div className="page-actions page-actions--center">
 					<button className="button" type="submit">Continuar</button>
 				</div>

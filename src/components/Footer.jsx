@@ -1,8 +1,7 @@
 function Footer() {
 	return (
 		<footer className="business-footer">
-			<span>Mariscos de tu Compa El Charly</span>
-			<span>Aguachiles y ceviches</span>
+			<span className="business-footer__phone">Num: 697-116-4710</span>
 		</footer>
 	)
 }

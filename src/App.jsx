@@ -27,7 +27,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 170,
-    image: getProductImage('aguachile-rojo.jpg'),
+    image: getProductImage('aguachile.png'),
   },
   {
     id: 'aguachile-verde',
@@ -35,7 +35,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 175,
-    image: getProductImage('aguachile-verde.jpg'),
+    image: getProductImage('aguachile.png'),
   },
   {
     id: 'aguachile-negro',
@@ -43,7 +43,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 180,
-    image: getProductImage('aguachile-negro.jpg'),
+    image: getProductImage('aguachile.png'),
   },
   {
     id: 'aguachile-a-la-diabla',
@@ -51,7 +51,7 @@ const products = [
     detail: 'Aguachile',
     size: 'Por charola',
     price: 185,
-    image: getProductImage('aguachile-a-la-diabla.jpg'),
+    image: getProductImage('aguachile.png'),
   },
   {
     id: 'ceviche-pescado-1l',
@@ -101,13 +101,33 @@ const products = [
     price: 90,
     image: getProductImage('ceviche-campechano-medio-litro.jpg'),
   },
+  {
+    id: 'extra-camaron',
+    name: 'Extra: Porción de camarón',
+    detail: 'Extra',
+    size: 'Porción',
+    price: 10,
+    isExtra: true,
+  },
+  {
+    id: 'extra-pescado',
+    name: 'Extra: Porción de pescado',
+    detail: 'Extra',
+    size: 'Porción',
+    price: 10,
+    isExtra: true,
+  },
 ]
 
 function App() {
   const [page, setPage] = useState('inicio')
   const [cart, setCart] = useState([])
-  const [customer, setCustomer] = useState({ name: '', phone: '', address: '' })
-  const [sellerName, setSellerName] = useState('')
+  const [customer, setCustomer] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    paymentAmount: null,
+  })
   const [orders, setOrders] = useState(() => {
     const savedOrders = window.localStorage.getItem('mariscos-charly-orders')
     return savedOrders ? JSON.parse(savedOrders) : []
@@ -164,7 +184,15 @@ function App() {
   }
 
   function continueToCustomer(formData) {
-    setCustomer(formData)
+    const paymentAmount =
+      formData.paymentAmount == null || formData.paymentAmount === ''
+        ? null
+        : Number(formData.paymentAmount)
+
+    setCustomer({
+      ...formData,
+      paymentAmount,
+    })
     setRegisteredOrder(null)
     setPage('confirmacion')
   }
@@ -177,6 +205,7 @@ function App() {
       items: cartItems.map((line) => ({ ...line, product: { ...line.product } })),
       customer: { ...customer },
       total: cartTotal,
+      amountPaid: customer.paymentAmount,
       createdAt: new Date().toLocaleString('es-MX', {
         dateStyle: 'short',
         timeStyle: 'short',
@@ -186,8 +215,19 @@ function App() {
     setRegisteredOrder(order)
   }
 
-  function handleSellerLogin(username) {
-    setSellerName(username)
+  function updateOrderPayment(orderId, amountPaid) {
+    if (amountPaid !== null && (!Number.isFinite(amountPaid) || amountPaid < 0)) {
+      return
+    }
+
+    setOrders((currentOrders) =>
+      currentOrders.map((order) =>
+        order.id === orderId ? { ...order, amountPaid } : order,
+      ),
+    )
+  }
+
+  function handleSellerLogin() {
     setPage('panel')
   }
 
@@ -198,7 +238,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${page === 'inicio' ? 'app-shell--home' : ''} ${page === 'pedido' ? 'app-shell--order' : ''} ${page === 'menu' ? 'app-shell--menu' : ''} ${page === 'datos' ? 'app-shell--customer-data' : ''} ${page === 'confirmacion' ? 'app-shell--confirmation' : ''}`}>
       {page !== 'login' && page !== 'panel' && (
         <Navbar currentPage={page} cartCount={cartCount} onNavigate={setPage} />
       )}
@@ -238,11 +278,10 @@ function App() {
         )}
         {page === 'panel' && (
           <PanelVendedor
-            sellerName={sellerName}
             products={products}
             orders={orders}
+            onPaymentChange={updateOrderPayment}
             onLogout={() => {
-              setSellerName('')
               setPage('inicio')
             }}
           />

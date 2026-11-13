@@ -2,8 +2,10 @@ function ProductCard({ product, onAdd }) {
 	const canAdd = product.price != null
 
 	return (
-		<article className="product-card">
-			<img className="product-card__image" src={product.image} alt={product.name} loading="lazy" />
+		<article className={`product-card ${product.isExtra ? 'product-card--no-image' : ''}`}>
+			{!product.isExtra && (
+				<img className="product-card__image" src={product.image} alt={product.name} loading="lazy" />
+			)}
 			<div className="product-card__body">
 				<p className="eyebrow">{product.detail}</p>
 				<h2 className="product-card__title">{product.name}</h2>

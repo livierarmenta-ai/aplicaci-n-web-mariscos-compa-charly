@@ -1,3 +1,5 @@
+import logoCharly from '../assets/logo-charly.png'
+
 const links = [
 	{ label: 'Inicio', page: 'inicio' },
 	{ label: 'Menú', page: 'menu' },
@@ -14,8 +16,11 @@ function Navbar({ currentPage, cartCount, onNavigate }) {
 				onClick={() => onNavigate('inicio')}
 				aria-label="Ir al inicio"
 			>
-				<span className="brand-mark__name">EL CHARLY</span>
-				<span className="brand-mark__subtitle">MARISCOS DE TU COMPA</span>
+				<img
+					className="brand-mark__logo"
+					src={logoCharly}
+					alt="Mariscos de tu Compa El Charly"
+				/>
 			</button>
 
 			<nav className="site-nav" aria-label="Navegación principal">

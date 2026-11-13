@@ -1,4 +1,13 @@
 function Confirmacion({ order, registered, onRegister, onBack }) {
+	const hasPaymentAmount = order.customer.paymentAmount != null
+	const paymentAmount = Number(order.customer.paymentAmount)
+	const formatCurrency = (value) =>
+		new Intl.NumberFormat('es-MX', {
+			style: 'currency',
+			currency: 'MXN',
+			maximumFractionDigits: 2,
+		}).format(value)
+
 	return (
 		<section className="content-page narrow-page">
 			<div className="page-heading page-heading--center">
@@ -24,6 +33,25 @@ function Confirmacion({ order, registered, onRegister, onBack }) {
 					<p><span>Nombre:</span> {order.customer.name || '—'}</p>
 					<p><span>Teléfono:</span> {order.customer.phone || '—'}</p>
 					<p><span>Dirección:</span> {order.customer.address || '—'}</p>
+					<div className="confirmation-customer-products">
+						<span>Producto y costo:</span>
+						<div>
+							{order.items.map(({ product, quantity }) => (
+								<p key={product.id}>
+									{product.name} × {quantity} — {formatCurrency(product.price * quantity)}
+								</p>
+							))}
+						</div>
+					</div>
+					{hasPaymentAmount && (
+						<>
+							<p><span>Pagará con:</span> {formatCurrency(paymentAmount)}</p>
+							<p>
+								<span>{paymentAmount >= order.total ? 'Cambio estimado:' : 'Falta por pagar:'}</span>
+								{formatCurrency(Math.abs(paymentAmount - order.total))}
+							</p>
+						</>
+					)}
 				</section>
 
 				<div className="order-total order-total--large">

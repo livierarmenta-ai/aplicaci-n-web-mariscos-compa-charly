@@ -3,7 +3,7 @@ import logoCharly from '../assets/logo-charly.png'
 
 const sections = ['Resumen', 'Productos', 'Pedidos', 'Ventas']
 
-function PanelVendedor({ sellerName, products, orders, onLogout }) {
+function PanelVendedor({ products, orders, onPaymentChange, onLogout }) {
 	const [section, setSection] = useState('Resumen')
 	const salesTotal = orders.reduce((total, order) => total + order.total, 0)
 	const averageTicket = orders.length ? salesTotal / orders.length : 0
@@ -12,7 +12,7 @@ function PanelVendedor({ sellerName, products, orders, onLogout }) {
 		new Intl.NumberFormat('es-MX', {
 			style: 'currency',
 			currency: 'MXN',
-			maximumFractionDigits: 0,
+			maximumFractionDigits: 2,
 		}).format(value)
 	const itemsSold = useMemo(() => {
 		const counts = new Map()
@@ -35,10 +35,6 @@ function PanelVendedor({ sellerName, products, orders, onLogout }) {
 						src={logoCharly}
 					/>
 				</div>
-				<div className="seller-header__meta">
-					<span className="seller-header__tag">{sellerName || 'Vendedor'}</span>
-				</div>
-				<button className="button button--text" type="button" onClick={onLogout}>Salir</button>
 			</header>
 
 			<div className="seller-workspace">
@@ -63,7 +59,10 @@ function PanelVendedor({ sellerName, products, orders, onLogout }) {
 									<p className="eyebrow">Panel del propietario/vendedor</p>
 									<h1>Resumen del día</h1>
 								</div>
-								<span className="seller-pill">{orders.length} pedidos</span>
+								<div className="seller-content__actions">
+									<span className="seller-pill">{orders.length} pedidos</span>
+									<button className="button button--text" type="button" onClick={onLogout}>Salir</button>
+								</div>
 							</div>
 							<div className="stat-grid">
 								<article className="stat-card stat-card--primary">
@@ -121,7 +120,10 @@ function PanelVendedor({ sellerName, products, orders, onLogout }) {
 						<>
 							<div className="page-heading seller-content__heading">
 								<div><p className="eyebrow">Catálogo</p><h1>Productos</h1></div>
-								<span className="seller-pill">{products.length} opciones</span>
+								<div className="seller-content__actions">
+									<span className="seller-pill">{products.length} opciones</span>
+									<button className="button button--text" type="button" onClick={onLogout}>Salir</button>
+								</div>
 							</div>
 							<div className="seller-list seller-list--catalog">
 								{products.map((product) => (
@@ -141,7 +143,10 @@ function PanelVendedor({ sellerName, products, orders, onLogout }) {
 						<>
 							<div className="page-heading seller-content__heading">
 								<div><p className="eyebrow">Pedidos guardados en este dispositivo</p><h1>Pedidos</h1></div>
-								<span className="seller-pill">{orders.length} totales</span>
+								<div className="seller-content__actions">
+									<span className="seller-pill">{orders.length} totales</span>
+									<button className="button button--text" type="button" onClick={onLogout}>Salir</button>
+								</div>
 							</div>
 							{orders.length ? (
 								<div className="seller-list seller-list--orders">
@@ -160,6 +165,30 @@ function PanelVendedor({ sellerName, products, orders, onLogout }) {
 											<div className="seller-list__amount">
 												<span>#{order.id}</span>
 												<strong>{formatCurrency(order.total)}</strong>
+												<label className="seller-order-payment">
+													<span>Recibido</span>
+													<input
+														aria-label={`Pago recibido para el pedido ${order.id}`}
+														min="0"
+														step="0.01"
+														type="number"
+														value={order.amountPaid ?? ''}
+														onChange={(event) => {
+															const value = event.target.value
+															const amountPaid = value === '' ? null : Number(value)
+															if (amountPaid === null || Number.isFinite(amountPaid)) {
+																onPaymentChange(order.id, amountPaid)
+															}
+														}}
+													/>
+												</label>
+												{order.amountPaid != null && (
+													<strong className="seller-order-change">
+														{order.amountPaid >= order.total
+															? `Cambio: ${formatCurrency(order.amountPaid - order.total)}`
+															: `Falta: ${formatCurrency(order.total - order.amountPaid)}`}
+													</strong>
+												)}
 											</div>
 										</article>
 									))}
@@ -172,7 +201,10 @@ function PanelVendedor({ sellerName, products, orders, onLogout }) {
 						<>
 							<div className="page-heading seller-content__heading">
 								<div><p className="eyebrow">Acumulado de pedidos registrados</p><h1>Ventas</h1></div>
-								<span className="seller-pill">{orders.length} en total</span>
+								<div className="seller-content__actions">
+									<span className="seller-pill">{orders.length} en total</span>
+									<button className="button button--text" type="button" onClick={onLogout}>Salir</button>
+								</div>
 							</div>
 							<div className="sales-panel">
 								<div className="sales-total">
